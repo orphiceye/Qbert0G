@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package qrng;
+
+// Request for quantum random data
+message RandomRequest {
+  // Number of raw bytes to return
+  uint32 num_bytes = 1;
+
+  // Authentication: pass api_key via gRPC metadata key "api-key"
+}
+
+// Response containing quantum random data
+message RandomResponse {
+  // Raw quantum random bytes
+  bytes data = 1;
+
+  // Server timestamp (Unix epoch in microseconds)
+  uint64 timestamp = 2;
+
+  // ID of the device that served this request
+  string device_id = 3;
+}
+
+// Service definition
+service QuantumRNG {
+  // Get quantum random bytes
+  rpc GetRandomBytes(RandomRequest) returns (RandomResponse);
+}

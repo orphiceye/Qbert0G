@@ -1,0 +1,78 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.so
+*.dylib
+.Python
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+*.whl
+
+# Secrets and runtime configuration
+config.yaml
+
+# Database files (SQLite — all modes)
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Logs and temp files
+*.log
+logs/
+*.tmp
+*.bak
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Environment variable files
+.env
+.env.*
+!.env.example
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+coverage.xml
+*.cover
+htmlcov/
+.tox/
+
+# Type checking
+.mypy_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,78 @@
+# QRNG gRPC Service Configuration
+# Copy this file to config.yaml and customize for your setup.
+
+# Service settings
+service:
+  host: "0.0.0.0"
+  port: 50051              # gRPC port (different from FastAPI)
+  request_timeout: 5.0     # Max seconds to wait for device availability
+  max_bytes_per_request: 16384  # Default max bytes per request (overridable per key)
+  database_path: "./qrng_grpc.db"  # Separate database from FastAPI service
+  failover_enabled: true   # Enable automatic failover to similar devices when primary is unavailable
+  default_rate_limit: 200              # Default requests per minute per API key
+  default_daily_byte_limit: 104857600  # Default daily byte limit per key (100 MB)
+  max_message_size: 16777216           # Max gRPC message size (16 MB)
+
+# Bootstrap admin API key
+# Set this to create an initial admin account on first startup.
+# Generate a secure key with: python -c "import secrets; print(secrets.token_urlsafe(32))"
+# Remove or comment out after creating your own admin keys.
+#admin_api_key: "CHANGE_ME_TO_A_SECURE_RANDOM_STRING"
+
+# QRNG Device Configuration
+# List all your Crypta Labs devices here.
+#
+# Device types:
+#   - firefly: PCIe devices (high throughput, ~20 Mbps)
+#   - qcicada: USB devices (lower throughput, ~0.5 Mbps)
+#
+# Device paths:
+#   - Firefly: /dev/ttyACM* (USB-CDC interface)
+#   - QCicada: /dev/ttyUSB* (FTDI USB Serial)
+#   Use 'dmesg | grep -E "tty(ACM|USB)"' to find actual paths
+#
+# Post-Processing Modes:
+#   - 0: Enabled (default) - SHA256 post-processing, NIST compliant
+#   - 1: Raw Noise - QOM data with health test conditioning
+#   - 2: Raw Samples - Direct QOM output, no conditioning
+#
+#   Mode 0 is recommended for cryptographic use.
+#   Modes 1 and 2 provide less processed data that may be useful
+#   for consciousness-influenceable LLM applications or research.
+#
+# Fallback routing priority:
+#   1. Primary device assigned to API key
+#   2. Other devices of the same type
+#   3. Devices of different type
+#
+#   NOTE: When fallback occurs, each device uses its own post-processing mode.
+#   So a request to a mode-2 device that falls back to a mode-0 device
+#   will receive mode-0 data (fully post-processed).
+#
+devices:
+  # Firefly PCIe devices (appear as /dev/ttyACM*)
+  - id: "firefly-1"
+    type: "firefly"
+    path: "/dev/ttyACM0"
+    baud_rate: 115200
+    timeout: 5.0
+    enabled: true
+    post_processing_mode: 1 # Raw noise (health test conditioned)
+
+  - id: "firefly-2"
+    type: "firefly"
+    path: "/dev/ttyACM1"
+    baud_rate: 115200
+    timeout: 5.0
+    enabled: true
+    post_processing_mode: 1 # Raw noise (health test conditioned)
+
+  # QCicada USB devices (appear as /dev/ttyUSB*)
+  # Check actual device paths with: dmesg | grep ttyUSB
+  #- id: "qcicada-1"
+  #  type: "qcicada"
+  #  path: "/dev/ttyUSB0"
+  #  baud_rate: 115200
+  #  timeout: 5.0
+  #  enabled: false
+  #  post_processing_mode: 1  # Raw noise (health test conditioned)
