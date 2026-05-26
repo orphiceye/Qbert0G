@@ -1,14 +1,20 @@
 # Qbert0G gRPC QRNG Service
 
-High-performance gRPC service for quantum random number generation using Crypta Labs devices (Firefly and QCicada).
+A gRPC service that streams **freshly measured quantum noise** from Crypta Labs devices (Firefly and QCicada). Built for quantum and entropy research — not for cryptography.
+
+Each response carries raw bytes sampled at request time, tagged with the source `device_id` and a microsecond `timestamp`, so every byte is traceable to a specific device and measurement window.
+
+> **Not for cryptographic or security use.**
+> Output is intentionally **not NIST SP 800-90B compliant**. If you need a cryptographic RNG, look elsewhere.
 
 ## Features
 
-- **High Performance**: gRPC with Protocol Buffers for efficient binary data transfer
-- **Low Latency**: Minimal overhead — raw bytes over HTTP/2
-- **API Key Management**: Per-key rate limiting, daily byte limits, per-request byte limits
-- **Device Failover**: Automatic fallback to available devices
-- **Usage Tracking**: Per-key request and byte counts in SQLite
+- **Fresh and exclusive data per request** — no pooling, buffering, or pre-gen; every byte is measured upon request and served exclusively to the requester
+- **Low latency and efficient on the wire** — gRPC over HTTP/2 with compact Protobuf framing minimizes both per-call latency and bytes-per-byte overhead
+- **Per-request provenance** — response includes `device_id` and `timestamp` so samples can be attributed and reproduced in datasets
+- **Multiple post-processing modes** — raw noise (zero post-processing), with noise conditioning, or SHA-256 post-processed. Selectable per device, for research needs
+- **Device failover** — automatic fallback across configured devices
+- **API key management** — per-key rate limits, daily byte caps, and per-request byte caps, with usage tracked in SQLite
 
 ## Architecture
 
@@ -27,7 +33,7 @@ Quantum Devices (Firefly/QCicada)
 ### 1. Installation
 
 ```bash
-cd /home/qbert/service/qrng-grpc
+cd /your/directory/qrng-grpc
 
 # Install dependencies
 pip install -r requirements.txt
@@ -130,7 +136,7 @@ grpcurl -plaintext \
 Set `admin_api_key` in `config.yaml` before first startup:
 
 ```yaml
-admin_api_key: "your-secure-bootstrap-key"
+admin_api_key: "sample-only-your-secure-bootstrap-key"
 ```
 
 On first startup this creates an admin key in the database. If you change the value and restart, the new key is added as a second admin — the old one is not removed. To revoke the old key use `manage_keys.py disable` or `delete` (see below).
@@ -241,8 +247,8 @@ gRPC errors are returned as standard status codes:
 
 The service logs to stdout:
 ```
-2024-01-15 10:30:00 - app.server - INFO - Starting gRPC server on 0.0.0.0:50051
-2024-01-15 10:30:01 - app.device_manager - INFO - Device firefly-1 connected successfully
+2026-01-15 10:30:00 - app.server - INFO - Starting gRPC server on 0.0.0.0:50051
+2026-01-15 10:30:01 - app.device_manager - INFO - Device firefly-1 connected successfully
 ```
 
 ### Usage Statistics
@@ -328,7 +334,17 @@ sudo usermod -a -G dialout $USER
 
 ## License
 
-Same as the parent QRNG service project.
+Licensed under the Apache License, Version 2.0 (January 2004). See [LICENSE](LICENSE) for the full text.
+
+```
+Copyright 2026 Entropic Science, Bradley Stephenson (orphiceye)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+```
 
 ## Support
 

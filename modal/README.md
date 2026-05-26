@@ -27,7 +27,7 @@ modal setup
 modal secret create cf-access-qrng \
     CF_ACCESS_CLIENT_ID="<provided>" \
     CF_ACCESS_CLIENT_SECRET="<provided>" \
-    QRNG_TUNNEL_HOSTNAME="qbert-grpc.cipherstone.co"
+    QRNG_TUNNEL_HOSTNAME="qrngtunnel.hostname.com"
 
 modal secret create qrng-api-key \
     QRNG_API_KEY="<provided>"
@@ -74,13 +74,3 @@ def my_function():
 
 The tunnel sidecar starts once per container and stays alive across calls —
 there is no per-call connection overhead.
-
-## Byte limits of Alchy's key (these can be adjusted by request)
-
-| Limit | Default |
-|---|---|
-| Per request | 13,312 bytes |
-| Per minute | 500 requests |
-| Per day | 500 MB |
-
-Requests exceeding these return a gRPC `RESOURCE_EXHAUSTED` status.
